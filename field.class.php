@@ -42,14 +42,22 @@ class profile_field_multiselect extends profile_field_base
     {
         //first call parent constructor
         parent::__construct($fieldid, $userid, $fielddata);
-        /// Param 1 for menu type is the options
 
-        $options = explode("\n", $this->field->param1);
+        $options = [];
+
+        /// Param 1 for menu type is the options
+        if (is_object($this->field) && property_exists($this->field, 'param1')) {
+            $options = explode("\n", $this->field->param1);
+        }
 
         $this->options = array();
-        if ($this->field->required) {
-            $this->options[''] = get_string('choose').'...';
+
+        if (is_object($this->field) && property_exists($this->field, 'required')) {
+            if ($this->field->required) {
+                $this->options[''] = get_string('choose') . '...';
+            }
         }
+
         foreach ($options as $key => $option) {
             $this->options[$key] = format_string($option); //multilang formatting
         }
@@ -105,7 +113,7 @@ class profile_field_multiselect extends profile_field_base
         if (is_array($data)) {
             foreach ($data as $key) {
                 if (isset($this->options[$key])) {
-                    $string .= $this->options[$key]."\r\n";
+                    $string .= $this->options[$key] . "\r\n";
                 }
             }
 
